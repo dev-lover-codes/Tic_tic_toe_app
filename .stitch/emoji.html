@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tic-Tac-Toe Emoji Selection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00E5FF",
+                        "background-light": "#f5fafd",
+                        "background-dark": "#0a161a",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .emoji-card-selected {
+            box-shadow: 0 0 20px 2px rgba(0, 229, 255, 0.6);
+            border: 2px solid #00E5FF;
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<div class="flex items-center p-4 pb-2 justify-between">
+<div class="text-slate-900 dark:text-slate-100 flex size-12 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Tic-Tac-Toe</h2>
+</div>
+<!-- Header Section -->
+<div class="px-4 py-8 text-center">
+<h1 class="text-slate-900 dark:text-slate-100 tracking-tight text-3xl font-bold leading-tight mb-2">Choose Your Piece</h1>
+<p class="text-slate-600 dark:text-slate-400 text-base">Select the emoji you want to play as. The classic 'X' just got an upgrade.</p>
+</div>
+<!-- Emoji Selection Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 mb-8">
+<!-- Selected State Example (😀) -->
+<div class="emoji-card-selected bg-primary/10 dark:bg-primary/20 flex flex-col items-center justify-center gap-3 rounded-xl aspect-square cursor-pointer transition-all hover:scale-105 border-2 border-primary">
+<span class="text-5xl drop-shadow-lg">😀</span>
+<span class="text-xs font-bold text-primary uppercase tracking-widest neon-text-glow">Selected</span>
+</div>
+<!-- Standard Items -->
+<div class="bg-slate-200 dark:bg-slate-800/50 flex flex-col items-center justify-center gap-3 rounded-xl aspect-square cursor-pointer transition-all hover:bg-primary/10 dark:hover:bg-primary/10 border-2 border-transparent hover:border-primary/40 group">
+<span class="text-5xl group-hover:scale-110 transition-transform">😎</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-800/50 flex flex-col items-center justify-center gap-3 rounded-xl aspect-square cursor-pointer transition-all hover:bg-primary/10 dark:hover:bg-primary/10 border-2 border-transparent hover:border-primary/40 group">
+<span class="text-5xl group-hover:scale-110 transition-transform">🤖</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-800/50 flex flex-col items-center justify-center gap-3 rounded-xl aspect-square cursor-pointer transition-all hover:bg-primary/10 dark:hover:bg-primary/10 border-2 border-transparent hover:border-primary/40 group">
+<span class="text-5xl group-hover:scale-110 transition-transform">👻</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-800/50 flex flex-col items-center justify-center gap-3 rounded-xl aspect-square cursor-pointer transition-all hover:bg-primary/10 dark:hover:bg-primary/10 border-2 border-transparent hover:border-primary/40 group">
+<span class="text-5xl group-hover:scale-110 transition-transform">🐱</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-800/50 flex flex-col items-center justify-center gap-3 rounded-xl aspect-square cursor-pointer transition-all hover:bg-primary/10 dark:hover:bg-primary/10 border-2 border-transparent hover:border-primary/40 group">
+<span class="text-5xl group-hover:scale-110 transition-transform">🐸</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-800/50 flex flex-col items-center justify-center gap-3 rounded-xl aspect-square cursor-pointer transition-all hover:bg-primary/10 dark:hover:bg-primary/10 border-2 border-transparent hover:border-primary/40 group">
+<span class="text-5xl group-hover:scale-110 transition-transform">🔥</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-800/50 flex flex-col items-center justify-center gap-3 rounded-xl aspect-square cursor-pointer transition-all hover:bg-primary/10 dark:hover:bg-primary/10 border-2 border-transparent hover:border-primary/40 group">
+<span class="text-5xl group-hover:scale-110 transition-transform">⭐</span>
+</div>
+</div>
+<!-- Confirm Action -->
+<div class="mt-auto p-6 bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800">
+<button class="w-full flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-primary text-[#0a161a] text-lg font-bold leading-normal tracking-[0.015em] shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow active:scale-[0.98]">
+<span class="truncate">Confirm Selection</span>
+</button>
+<p class="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+            Playing against: <span class="text-primary font-bold">O</span> (Standard)
+        </p>
+</div>
+<!-- Decorative Background Elements -->
+<div class="fixed -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="fixed -bottom-24 -left-24 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+</div>
+</body></html>

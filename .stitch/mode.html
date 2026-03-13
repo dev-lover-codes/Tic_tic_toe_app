@@ -1,0 +1,135 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00E5FF",
+            "background-light": "#f5f8f8",
+            "background-dark": "#0a1619",
+          },
+          fontFamily: {
+            "display": ["Space Grotesk"]
+          },
+          borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .glass-card {
+      background: rgba(0, 229, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+    }
+    .neon-glow {
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+    }
+    .neon-glow:hover {
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.6);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<div class="relative flex h-full w-full flex-col bg-gradient-to-b from-background-dark via-[#0c2227] to-background-dark overflow-x-hidden">
+<div class="flex items-center p-4 justify-between">
+<div class="text-slate-100 flex size-12 shrink-0 items-center justify-center cursor-pointer hover:text-primary transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-12">Tic-Tac-Toe</h2>
+</div>
+<div class="px-6 pt-8 pb-4">
+<h1 class="text-slate-100 tracking-tight text-4xl font-bold leading-tight text-center">
+        Select <span class="text-primary">Game Mode</span>
+</h1>
+<p class="text-primary/60 text-center mt-2 text-sm font-medium">Choose your battlefield</p>
+</div>
+<div class="flex-1 flex flex-col gap-6 p-6 max-w-2xl mx-auto w-full">
+<div class="glass-card rounded-xl overflow-hidden group transition-all duration-300 hover:scale-[1.02]">
+<div class="relative h-48 w-full bg-slate-800">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent z-10"></div>
+<img alt="Abstract neon grid with game pieces" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" data-alt="Abstract neon grid representing offline gameplay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1OLFHSSPJ3P4CjTQ7m_HmjJipCyT4ZQZ2qhiBKw3x1Nood-tU4qNdKCETEfBWropq3zloUMpekUJmW3vub-aoxeDLGzNDyxF83zFsaIMqjkWLj7yfVTy1wOTE4DscY143fvtmbdlmcrjnUAqFBiiMnzrviEA0RA74P_Pq5EzFn-HVefh-bD5irmKDL0P2mUTfDKi3IgGpgvvFfVN-gFcUi2zvnWLTYdxiLRdp3ipd6T04ypJgHaIn8sCvve0i4T4rMfDe3Pyg8wUU"/>
+<div class="absolute bottom-4 left-4 z-20">
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-primary/30">Solo / Local</span>
+</div>
+</div>
+<div class="p-6">
+<h3 class="text-white text-2xl font-bold mb-2">Offline Mode</h3>
+<p class="text-slate-400 text-sm mb-6 leading-relaxed">Perfect your strategy against our advanced AI or challenge a friend sitting right next to you.</p>
+<button class="w-full neon-glow bg-primary hover:bg-primary/90 text-slate-900 font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">smart_toy</span>
+            Play Offline
+          </button>
+</div>
+</div>
+<div class="glass-card rounded-xl overflow-hidden group transition-all duration-300 hover:scale-[1.02]">
+<div class="relative h-48 w-full bg-slate-800">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent z-10"></div>
+<img alt="Global network nodes connecting neon points" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" data-alt="Futuristic digital network visualization for online play" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCZxb8ESLYs-WzP47j0cCUy7OmmKUuJ2NJBcLidops1hPqVzK8Ll06uEKNGQElqWUF5XSApl4snCBxrATJBmebcku5CRuCX3ESzfOl4rrHsmaUena2pSo7TPMnbRGYxTqxzaI3Nr-l8lX6o2OKCtRX1or0dsNi8YOCgQ0Q-ki_175CyFoIqvRFSBgYxUZo2ojw1hC9EWzFsrhSuYUXDhX5uwoUtsrhRFcHaw8ggVyphGxdmufmN3VmidQ42TNWEiw1SzU2038iZPTv"/>
+<div class="absolute bottom-4 left-4 z-20">
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-primary/30">Multiplayer</span>
+</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-white text-2xl font-bold">Online Mode</h3>
+<div class="flex items-center gap-1 text-green-400 text-xs font-medium">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</span>
+              1,240 Online
+            </div>
+</div>
+<p class="text-slate-400 text-sm mb-6 leading-relaxed">Compete with grandmasters worldwide. Climb the global leaderboard and earn exclusive rewards.</p>
+<div class="flex flex-col gap-3">
+<div class="grid grid-cols-2 gap-3">
+<button class="border border-primary/40 hover:bg-primary/10 text-primary font-semibold py-3 rounded-lg transition-all text-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">login</span>
+                Login
+              </button>
+<button class="border border-slate-700 hover:bg-slate-800 text-slate-300 font-semibold py-3 rounded-lg transition-all text-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">person_add</span>
+                Register
+              </button>
+</div>
+<p class="text-[10px] text-center text-slate-500 uppercase tracking-widest mt-1">Authentication required for ranked play</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto">
+<div class="flex gap-2 border-t border-primary/20 bg-background-dark/80 backdrop-blur-md px-4 pb-8 pt-3">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl text-primary" href="#">
+<span class="material-symbols-outlined text-2xl fill-1">home</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Home</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">emoji_events</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Rankings</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Profile</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Settings</span>
+</a>
+</div>
+</div>
+</div>
+</body></html>
