@@ -1,289 +1,190 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_panel.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _gridCtrl;
+  late Animation<double> _gridRotation;
+  late Animation<double> _gridScale;
+  late Animation<double> _fadeIn;
+
+  @override
+  void initState() {
+    super.initState();
+    _gridCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1800))
+      ..forward();
+    _gridRotation = Tween(begin: -0.15, end: 0.0).animate(
+        CurvedAnimation(parent: _gridCtrl, curve: const Interval(0, 0.6, curve: Curves.easeOut)));
+    _gridScale = Tween(begin: 0.7, end: 1.0).animate(
+        CurvedAnimation(parent: _gridCtrl, curve: const Interval(0, 0.6, curve: Curves.easeOut)));
+    _fadeIn = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _gridCtrl, curve: const Interval(0.4, 1.0, curve: Curves.easeIn)));
+  }
+
+  @override
+  void dispose() {
+    _gridCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background Glows
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.2,
-            left: -50,
-            child: _buildGlow(AppTheme.primaryColor.withValues(alpha: 0.2), 250),
-          ),
-          Positioned(
-            bottom: MediaQuery.of(context).size.height * 0.2,
-            right: -50,
-            child: _buildGlow(Colors.blueAccent.withValues(alpha: 0.2), 320),
-          ),
-          // Scrollable Content
+      body: GradientBackground(
+        child: Stack(children: [
+          // Decorative orbs
+          Positioned(top: -80, left: -80,
+              child: _orb(AppTheme.primary.withValues(alpha: 0.15), 280)),
+          Positioned(bottom: -60, right: -60,
+              child: _orb(AppTheme.accent.withValues(alpha: 0.12), 240)),
           SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    children: [
-                      const SizedBox(height: 48),
-                      Center(child: _buildTicTacToeGrid()),
-                      const SizedBox(height: 48),
-                      // Title Text
-                      Text.rich(
-                        TextSpan(
-                          text: 'The Ultimate\n',
-                          children: [
-                            WidgetSpan(
-                              child: NeonGlowText('Challenge',
-                                  style: Theme.of(context).textTheme.displayLarge),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displayLarge?.copyWith(height: 1.2),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        "Experience the classic game with a modern neon twist. Play against global players or master the AI.",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white70),
-                      ),
-                      const SizedBox(height: 40),
-                      _buildActionButtons(context),
-                      const SizedBox(height: 64),
-                      _buildStatsBar(),
-                      const SizedBox(height: 48),
-                    ],
+            child: Column(children: [
+              const Spacer(),
+              // Animated logo grid
+              AnimatedBuilder(
+                animation: _gridCtrl,
+                builder: (_, __) => Transform.rotate(
+                  angle: _gridRotation.value,
+                  child: Transform.scale(
+                    scale: _gridScale.value,
+                    child: _logoGrid(),
                   ),
                 ),
-                _buildBottomNav(context),
-              ],
-            ),
+              ),
+              const SizedBox(height: 48),
+              // Title
+              FadeTransition(
+                opacity: _fadeIn,
+                child: Column(children: [
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Text('NEON ', style: Theme.of(context).textTheme.displayLarge),
+                    NeonGlowText('GRID',
+                        style: Theme.of(context).textTheme.displayLarge),
+                  ]),
+                  const SizedBox(height: 12),
+                  DefaultTextStyle(
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: AppTheme.textSecondary, fontStyle: FontStyle.italic),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TyperAnimatedText('Challenge the AI or a friend.',
+                            speed: const Duration(milliseconds: 60)),
+                        TyperAnimatedText('Who will claim the grid?',
+                            speed: const Duration(milliseconds: 60)),
+                        TyperAnimatedText('The ultimate Tic-Tac-Toe experience.',
+                            speed: const Duration(milliseconds: 60)),
+                      ],
+                      repeatForever: true,
+                    ),
+                  ),
+                ]),
+              ),
+              const Spacer(),
+              FadeTransition(
+                opacity: _fadeIn,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(children: [
+                    NeonButton(
+                      label: 'PLAY NOW',
+                      icon: Icons.play_arrow_rounded,
+                      onTap: () => context.push('/modes'),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStatBar(context),
+                  ]),
+                ),
+              ),
+              const SizedBox(height: 48),
+            ]),
           ),
-        ],
+        ]),
       ),
     );
   }
 
-  Widget _buildGlow(Color color, double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: color,
-            blurRadius: 100,
-            spreadRadius: 50,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.gamepad, color: AppTheme.primaryColor),
-          ),
-          const Text(
-            'NEON GRID',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
-            ),
-          ),
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.settings, color: AppTheme.primaryColor),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTicTacToeGrid() {
+  Widget _logoGrid() {
+    const cells = ['', '✕', '', '✕', '○', '', '', '', '✕'];
     return SizedBox(
-      width: 200,
-      height: 200,
+      width: 200, height: 200,
       child: GlassPanel(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-          ),
+              crossAxisCount: 3, mainAxisSpacing: 8, crossAxisSpacing: 8),
           itemCount: 9,
-          itemBuilder: (context, index) {
-            final isX = index == 0 || index == 4 || index == 8;
-            final isO = index == 2 || index == 6;
-            return Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: index < 6
-                      ? BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.3), width: 2)
-                      : BorderSide.none,
-                  right: (index + 1) % 3 != 0
-                      ? BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.3), width: 2)
-                      : BorderSide.none,
-                ),
+          itemBuilder: (_, i) => Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: i < 6 ? BorderSide(color: AppTheme.primary.withValues(alpha: 0.3), width: 1.5) : BorderSide.none,
+                right: (i + 1) % 3 != 0 ? BorderSide(color: AppTheme.primary.withValues(alpha: 0.3), width: 1.5) : BorderSide.none,
               ),
-              child: Center(
-                child: isX
-                    ? const NeonGlowText('X', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold))
-                    : (isO
-                        ? Text(
-                            'O',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white.withValues(alpha: 0.5),
-                            ),
-                          )
-                        : null),
-              ),
-            );
-          },
+            ),
+            child: Center(
+              child: Text(cells[i],
+                  style: TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold,
+                      color: cells[i] == '✕' ? AppTheme.primary : Colors.white54,
+                      shadows: cells[i] == '✕' ? [Shadow(color: AppTheme.primary.withValues(alpha: 0.8), blurRadius: 12)] : null)),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              context.push('/modes');
-            },
-            icon: const Icon(Icons.play_arrow, color: Colors.black),
-            label: const Text('PLAY NOW', style: TextStyle(color: Colors.black, fontSize: 18)),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: GlassPanel(
-            onTap: () {},
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.group, color: Colors.white),
-                SizedBox(width: 8),
-                Text('MULTIPLAYER', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatsBar() {
-    return GlassPanel(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-      borderRadius: 100,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildStatColumn('Online', '1.2k', true),
-          Container(width: 1, height: 30, color: AppTheme.primaryColor.withValues(alpha: 0.2)),
-          _buildStatColumn('Matches', '450k+', false),
-          Container(width: 1, height: 30, color: AppTheme.primaryColor.withValues(alpha: 0.2)),
-          _buildStatColumn('Rating', '4.9/5', false),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatColumn(String label, String value, bool isPrimaryText) {
-    return Column(
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold, letterSpacing: 1),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: isPrimaryText ? AppTheme.primaryColor : Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBottomNav(BuildContext context) {
+  Widget _orb(Color color, double size) {
     return Container(
+      width: size, height: size,
       decoration: BoxDecoration(
-        color: AppTheme.backgroundDark.withValues(alpha: 0.8),
-        border: Border(top: BorderSide(color: AppTheme.primaryColor.withValues(alpha: 0.1))),
+        shape: BoxShape.circle,
+        boxShadow: [BoxShadow(color: color, blurRadius: 80, spreadRadius: 40)],
       ),
-      padding: const EdgeInsets.only(top: 8, bottom: 24, left: 16, right: 16),
-      child: SafeArea(
-        top: false,
+    );
+  }
+
+  Widget _buildStatBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: GlassPanel(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+        borderRadius: 100,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildNavItem(Icons.home, 'Home', true),
-            _buildNavItem(Icons.sports_esports, 'Games', false),
-            _buildNavItem(Icons.leaderboard, 'Rank', false),
-            _buildNavItem(Icons.person, 'Profile', false),
+            _stat('Levels', '3'),
+            _divider(),
+            _stat('Stages', '45'),
+            _divider(),
+            _stat('Rating', '⭐⭐⭐'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: isActive ? AppTheme.primaryColor : Colors.grey),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: isActive ? AppTheme.primaryColor : Colors.grey,
-          ),
-        ),
-      ],
-    );
-  }
+  Widget _stat(String label, String val) => Column(
+        children: [
+          Text(label.toUpperCase(),
+              style: const TextStyle(fontSize: 9, color: Colors.grey, letterSpacing: 1.5)),
+          const SizedBox(height: 4),
+          Text(val,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+        ],
+      );
+
+  Widget _divider() =>
+      Container(width: 1, height: 30, color: AppTheme.primary.withValues(alpha: 0.2));
 }

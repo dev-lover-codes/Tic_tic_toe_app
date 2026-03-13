@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 import 'router/app_router.dart';
+import 'providers/app_state.dart';
+import 'services/auth_service.dart';
+import 'services/local_storage_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase (will use google-services.json / GoogleService-Info.plist)
+  await Firebase.initializeApp();
+
+  final storage = await LocalStorageService.create();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => AppStateProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => AppState(storage: storage)),
+      ],
       child: const TicTacToeApp(),
     ),
   );
-}
-
-class AppStateProvider with ChangeNotifier {
-  String selectedEmoji = '😀';
-
-  void setEmoji(String emoji) {
-    selectedEmoji = emoji;
-    notifyListeners();
-  }
 }
 
 class TicTacToeApp extends StatelessWidget {
@@ -27,12 +32,10 @@ class TicTacToeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Tic-Tac-Toe Neon',
-      theme: AppTheme.darkTheme, // We stick with dartTheme for Neon style
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
-      routerConfig: appRouter,
+      title: 'Neon Grid – Tic Tac Toe',
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.darkTheme,
+      routerConfig: appRouter,
     );
   }
 }

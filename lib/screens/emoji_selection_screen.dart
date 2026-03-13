@@ -2,199 +2,236 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
-import '../main.dart';
 import '../widgets/glass_panel.dart';
+import '../providers/app_state.dart';
 
 class EmojiSelectionScreen extends StatefulWidget {
   const EmojiSelectionScreen({super.key});
-
   @override
   State<EmojiSelectionScreen> createState() => _EmojiSelectionScreenState();
 }
 
 class _EmojiSelectionScreenState extends State<EmojiSelectionScreen> {
-  final List<String> availableEmojis = [
-    '😀', '😎', '🤖', '👻', '🐱', '🐸', '🔥', '⭐'
+  static const _emojis = [
+    '😀', '😎', '🤩', '🥷',
+    '🐱', '🐸', '🔥', '⭐',
+    '🦊', '🎮', '👾', '🚀',
+    '🌈', '💎', '🏆', '🎯',
   ];
+
+  late String _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = context.read<AppState>().selectedEmoji;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppStateProvider>(context);
+    final appState = context.watch<AppState>();
 
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background Glows
-          Positioned(
-            top: -50,
-            right: -50,
-            child: _buildGlow(AppTheme.primaryColor.withValues(alpha: 0.1), 250),
-          ),
-          Positioned(
-            bottom: -50,
-            left: -50,
-            child: _buildGlow(AppTheme.primaryColor.withValues(alpha: 0.05), 250),
-          ),
-          SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(context),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                  child: Column(
-                    children: [
-                      Text('Choose Your Piece', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
-                      SizedBox(height: 8),
-                      Text("Select the emoji you want to play as. The classic 'X' just got an upgrade.",
-                          textAlign: TextAlign.center, style: TextStyle(color: Colors.white60, fontSize: 16)),
-                    ],
-                  ),
-                ),
+      body: GradientBackground(
+        child: SafeArea(
+          child: Column(children: [
+            _header(context),
+            Expanded(
+              child: Column(children: [
+                const SizedBox(height: 12),
+                Text('Choose Your Piece',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                    textAlign: TextAlign.center),
+                const SizedBox(height: 4),
+                Text('Your emoji, your identity on the board',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+                // Preview selected emoji
+                _SelectedPreview(emoji: _selected),
+                const SizedBox(height: 24),
                 Expanded(
                   child: GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
                       childAspectRatio: 1,
                     ),
-                    itemCount: availableEmojis.length,
-                    itemBuilder: (context, index) {
-                      final emoji = availableEmojis[index];
-                      final isSelected = appState.selectedEmoji == emoji;
-                      return _buildEmojiCard(emoji, isSelected, () {
-                        appState.setEmoji(emoji);
-                      });
-                    },
+                    itemCount: _emojis.length,
+                    itemBuilder: (_, i) => _EmojiTile(
+                      emoji: _emojis[i],
+                      isSelected: _selected == _emojis[i],
+                      onTap: () => setState(() => _selected = _emojis[i]),
+                    ),
                   ),
                 ),
-                _buildConfirmAction(context),
-              ],
+                _bottomBar(context, appState),
+              ]),
             ),
-          ),
-        ],
+          ]),
+        ),
       ),
     );
   }
 
-  Widget _buildGlow(Color color, double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: color,
-            blurRadius: 100,
-            spreadRadius: 50,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
+  Widget _header(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => context.pop(),
-          ),
-          const Expanded(
-            child: Text(
-              'Tic-Tac-Toe',
+      padding: const EdgeInsets.all(16),
+      child: Row(children: [
+        IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded),
+          onPressed: () => context.pop(),
+        ),
+        Expanded(
+          child: Text('Tic-Tac-Neon',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-          ),
-          const SizedBox(width: 48), // Balance for centering
-        ],
-      ),
+              style: Theme.of(context).textTheme.titleLarge),
+        ),
+        const SizedBox(width: 48),
+      ]),
     );
   }
 
-  Widget _buildEmojiCard(String emoji, bool isSelected, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryColor.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppTheme.primaryColor : Colors.transparent,
-            width: 2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.4),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  )
-                ]
-              : null,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              emoji,
-              style: const TextStyle(fontSize: 48),
-            ),
-            if (isSelected)
-              const Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: NeonGlowText(
-                  'SELECTED',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildConfirmAction(BuildContext context) {
+  Widget _bottomBar(BuildContext context, AppState appState) {
     return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: AppTheme.backgroundDark,
-        border: Border(top: BorderSide(color: Colors.white12)),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      decoration: BoxDecoration(
+        color: AppTheme.bgDark.withValues(alpha: 0.8),
+        border: const Border(top: BorderSide(color: Colors.white10)),
       ),
-      child: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              context.push('/game');
-            },
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 56),
-              shadowColor: AppTheme.primaryColor,
-              elevation: 10,
-            ),
-            child: const Text('Confirm Selection', style: TextStyle(fontSize: 18, color: Colors.black)),
-          ),
-          const SizedBox(height: 16),
-          const Text.rich(
+      child: Column(children: [
+        NeonButton(
+          label: 'CONFIRM SELECTION',
+          icon: Icons.check_circle_rounded,
+          onTap: () {
+            appState.selectEmoji(_selected);
+            if (appState.isOnlineMode) {
+              context.push('/auth');
+            } else {
+              context.push('/stages');
+            }
+          },
+        ),
+        const SizedBox(height: 10),
+        Text.rich(TextSpan(
+          text: 'Selected: ',
+          style: const TextStyle(color: Colors.grey, fontSize: 13),
+          children: [
             TextSpan(
-              text: 'Playing against: ',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-              children: [
-                TextSpan(
-                  text: 'O ',
-                  style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
-                ),
-                TextSpan(text: '(Standard)'),
-              ],
+              text: '$_selected (Opponent: 🤖)',
+              style: const TextStyle(
+                  color: AppTheme.primary, fontWeight: FontWeight.bold),
             ),
+          ],
+        )),
+      ]),
+    );
+  }
+}
+
+class _SelectedPreview extends StatefulWidget {
+  final String emoji;
+  const _SelectedPreview({required this.emoji});
+  @override
+  State<_SelectedPreview> createState() => _SelectedPreviewState();
+}
+
+class _SelectedPreviewState extends State<_SelectedPreview>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+    _scale = Tween(begin: 0.5, end: 1.0)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut));
+    _ctrl.value = 1.0;
+  }
+
+  @override
+  void didUpdateWidget(_SelectedPreview old) {
+    super.didUpdateWidget(old);
+    if (old.emoji != widget.emoji) {
+      _ctrl.reset();
+      _ctrl.forward();
+    }
+  }
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassPanel(
+      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
+      borderRadius: 100,
+      child: ScaleTransition(
+        scale: _scale,
+        child: Text(widget.emoji, style: const TextStyle(fontSize: 52)),
+      ),
+    );
+  }
+}
+
+class _EmojiTile extends StatefulWidget {
+  final String emoji;
+  final bool isSelected;
+  final VoidCallback onTap;
+  const _EmojiTile({required this.emoji, required this.isSelected, required this.onTap});
+  @override
+  State<_EmojiTile> createState() => _EmojiTileState();
+}
+
+class _EmojiTileState extends State<_EmojiTile> with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
+    _scale = Tween(begin: 1.0, end: 1.15)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut));
+    if (widget.isSelected) _ctrl.forward();
+  }
+
+  @override
+  void didUpdateWidget(_EmojiTile old) {
+    super.didUpdateWidget(old);
+    if (widget.isSelected && !old.isSelected) _ctrl.forward();
+    if (!widget.isSelected && old.isSelected) _ctrl.reverse();
+  }
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: ScaleTransition(
+        scale: _scale,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: widget.isSelected
+                ? AppTheme.primary.withValues(alpha: 0.2)
+                : Colors.white.withValues(alpha: 0.04),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: widget.isSelected ? AppTheme.primary : Colors.white12,
+              width: widget.isSelected ? 2 : 1,
+            ),
+            boxShadow: widget.isSelected
+                ? [BoxShadow(color: AppTheme.primary.withValues(alpha: 0.4), blurRadius: 16, spreadRadius: 1)]
+                : null,
           ),
-        ],
+          child: Center(child: Text(widget.emoji, style: const TextStyle(fontSize: 30))),
+        ),
       ),
     );
   }
